@@ -1,87 +1,158 @@
-import {Link} from "react-router-dom";
-import heroImg from "@/assets/images/hero.png";
-import logo from "@/assets/images/Logo.jpg";
-import { FiUser, FiMail, FiLock } from "react-icons/fi";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Button, Input } from "@/components/common";
 import GoogleLogo from "@/assets/images/GoogleLogo.png";
 import FacebookLogo from "@/assets/images/FacebookLogo.webp";
-import backgroundImg from "@/assets/images/Background.jpg";
+import Logo from "@/assets/images/Logo.jpg";
 
-const SignupPage = () => {
+export default function SignupPage() {
+    const [form, setForm] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
+    const [showPassword, setShowPassword] = useState(false);
+    const [isLoading] = useState(false);
+    const [errors] = useState<Record<string, string>>({});
+
+    const updateField = (field: string, value: string) => {
+        setForm((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+    };
+
+    const handleGoogleSignup = () => {};
+
+    const handleFacebookSignup = () => {};
+
     return (
-        <div className="relative isolate min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-            <div className="absolute inset-0" style={{ backgroundImage: `url(${backgroundImg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: -20 }} />
-            <div className="absolute inset-0 bg-black opacity-25" style={{ zIndex: -10 }} />
+        <div className="min-h-screen flex flex-col bg-gray-50">
+            {/* Top bar with logo → home */}
+            <div className="px-6 py-4">
+                <Link to="/" className="inline-flex items-center gap-2 group">
+                    <img src={Logo} alt="Mini Coursera" className="h-10 w-10 rounded-lg object-cover" />
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        Mini Coursera
+                    </span>
+                </Link>
+            </div>
 
-            <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-                <div className="p-8">
-                    <div className="flex items-center justify-between">
-                        <Link to="/">
-                            <img className="h-10" src={logo} alt="Logo" />
+            {/* Center content */}
+            <div className="flex-1 flex items-center justify-center px-4 pb-12">
+                <div className="w-full max-w-md">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900">Đăng ký</h1>
+                        <p className="text-gray-500 mt-2">Tạo tài khoản để bắt đầu học</p>
+                    </div>
+
+                    {/* Card */}
+                    <div className="bg-white rounded-2xl shadow-sm border p-8">
+                        {/* OAuth Buttons */}
+                        <div className="space-y-3 mb-6">
+                            <button
+                                onClick={handleGoogleSignup}
+                                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+                            >
+                                <img src={GoogleLogo} alt="Google" className="w-5 h-5" />
+                                Đăng ký với Google
+                            </button>
+                            <button
+                                onClick={handleFacebookSignup}
+                                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+                            >
+                                <img src={FacebookLogo} alt="Facebook" className="w-5 h-5" />
+                                Đăng ký với Facebook
+                            </button>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="relative mb-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-4 bg-white text-gray-500">hoặc đăng ký với email</span>
+                            </div>
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {errors.general && (
+                                <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">{errors.general}</div>
+                            )}
+
+                            <Input
+                                label="Họ và tên"
+                                placeholder="Nguyễn Văn A"
+                                value={form.fullName}
+                                onChange={(e) => updateField("fullName", e.target.value)}
+                                error={errors.fullName}
+                                leftIcon={<User size={18} />}
+                            />
+
+                            <Input
+                                label="Email"
+                                type="email"
+                                placeholder="you@example.com"
+                                value={form.email}
+                                onChange={(e) => updateField("email", e.target.value)}
+                                error={errors.email}
+                                leftIcon={<Mail size={18} />}
+                            />
+
+                            <Input
+                                label="Mật khẩu"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Ít nhất 8 ký tự"
+                                value={form.password}
+                                onChange={(e) => updateField("password", e.target.value)}
+                                error={errors.password}
+                                leftIcon={<Lock size={18} />}
+                                rightIcon={
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="cursor-pointer">
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                }
+                            />
+
+                            <Input
+                                label="Xác nhận mật khẩu"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Nhập lại mật khẩu"
+                                value={form.confirmPassword}
+                                onChange={(e) => updateField("confirmPassword", e.target.value)}
+                                error={errors.confirmPassword}
+                                leftIcon={<Lock size={18} />}
+                            />
+
+                            <p className="text-xs text-gray-500">
+                                Bằng việc đăng ký, bạn đồng ý với{" "}
+                                <a href="#" className="text-blue-600 hover:underline">
+                                    Điều khoản dịch vụ
+                                </a>{" "}
+                                và{" "}
+                                <a href="#" className="text-blue-600 hover:underline">
+                                    Chính sách bảo mật
+                                </a>
+                                .
+                            </p>
+
+                            <Button type="submit" fullWidth isLoading={isLoading}>
+                                Đăng ký
+                            </Button>
+                        </form>
+                    </div>
+
+                    {/* Footer */}
+                    <p className="text-center mt-6 text-sm text-gray-500">
+                        Đã có tài khoản?{" "}
+                        <Link to="/login" className="text-blue-600 font-medium hover:underline">
+                            Đăng nhập
                         </Link>
-                        <div className="text-sm text-gray-500">Already have an account? <Link to="/login" className="text-blue-600 font-medium">Sign in</Link></div>
-                    </div>
-
-                    <div className="mt-6">
-                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Create your account</h2>
-                        <p className="mt-2 text-sm text-gray-500">Join thousands of learners around the world.</p>
-                    </div>
-
-                    <form className="mt-8 space-y-4" onSubmit={(e) => e.preventDefault()}>
-                        <div className="space-y-3">
-                            <div className="relative">
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><FiUser /></span>
-                                <input id="name" name="name" type="text" required placeholder="Full name"
-                                       className="pl-10 pr-3 py-2 w-full border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                            </div>
-
-                            <div className="relative">
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><FiMail /></span>
-                                <input id="email" name="email" type="email" required placeholder="Email address"
-                                       className="pl-10 pr-3 py-2 w-full border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                            </div>
-
-                            <div className="relative">
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><FiLock /></span>
-                                <input id="password" name="password" type="password" required placeholder="Password"
-                                       className="pl-10 pr-3 py-2 w-full border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <button type="submit" className="w-full py-2 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-md shadow-sm hover:opacity-95">Create account</button>
-                        </div>
-
-                        <div className="flex items-center gap-3 text-sm text-gray-400">
-                            <hr className="flex-1" />
-                            <span>or continue with</span>
-                            <hr className="flex-1" />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <button type="button" className="py-2 px-3 border rounded-md flex items-center justify-center gap-2 text-sm">
-                                <img src={GoogleLogo} alt="google" className="h-4 w-4 object-contain" />
-                                Google
-                            </button>
-                            <button type="button" className="py-2 px-3 border rounded-md flex items-center justify-center gap-2 text-sm">
-                                <img src={FacebookLogo} alt="google" className="h-4 w-4 object-contain" />
-                                Facebook
-                            </button>
-                        </div>
-
-                        <p className="mt-4 text-xs text-gray-400">This is UI only — registration not implemented yet.</p>
-                    </form>
-                </div>
-
-                <div className="hidden lg:flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600">
-                    <div className="p-8 text-center">
-                        <img src={heroImg} alt="Growth" className="w-[300px] mx-auto" style={{ objectFit: 'contain' }} />
-                        <h3 className="mt-6 text-2xl font-bold text-white">Upskill with projects</h3>
-                        <p className="mt-2 text-sm text-indigo-100">Hands-on courses with real projects to build your portfolio.</p>
-                    </div>
+                    </p>
                 </div>
             </div>
         </div>
     );
-};
+}
 
-export default SignupPage;
